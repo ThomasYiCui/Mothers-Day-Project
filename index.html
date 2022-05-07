@@ -264,6 +264,219 @@ function lava(x, y, w, h) {
         playerY = respawnY;
     }
 }
+// game2 {
+        var menu = {
+            BBy: -20,
+            Bx: -200,
+            B2x: canvas.width + 10,
+            B3x: -200,
+        }
+        var gameover = {
+            By: canvas.height + 50,
+            Ty: -75,
+        }
+        var score = 0
+        var sceney = "menu"
+        var player = {
+            
+        }
+        var hoopX = Math.round(random(100, canvas.width - 50));
+        var hoopY = Math.round(random(0, canvas.height - 150));
+        var ballX = 0;
+        var ballY = canvas.height - 80;
+        var ballGrab = true;
+        var ballGrav = 0;
+        var ballMom = 0;
+        function floor(num) {
+            return Math.floor(num)
+        }
+        function buttonn(x, y, w, h, t, txt) {
+            strokeWeight(3)
+            eRect(x, y, w, h, (0, 0, 0))
+            textAlign("center")
+            text(txt[0], x + w/2, y + h/2 + txt[1]/4, txt[1])
+            if(mouseX > x && mouseY > y && mouseX < x + w && mouseY < y + h && clicked) {
+                t();
+            }
+        }
+        function basketBallBG() {
+            fill(194, 103, 0);
+            rect(0, 0, canvas.width, canvas.height);
+            fill(184, 93, 0);
+            rect(canvas.width/2.54, canvas.height/5.00, canvas.width/20, canvas.height/30);
+            rect(canvas.width/1.15, canvas.height/1.54, canvas.width/20, canvas.height/30);
+            rect(canvas.width/4.25, canvas.height/3.68, canvas.width/20, canvas.height/30);
+            rect(canvas.width/2.47, canvas.height/1.78, canvas.width/20, canvas.height/30);
+            rect(canvas.width/1.16, canvas.height/4.03, canvas.width/20, canvas.height/30);
+            rect(canvas.width/4.52, canvas.height/1.15, canvas.width/20, canvas.height/30);
+            rect(canvas.width/1.46, canvas.height/1.18, canvas.width/20, canvas.height/30);
+            rect(canvas.width/5.23, canvas.height/2.05, canvas.width/20, canvas.height/30);
+        }
+        function drawMenu() {
+            basketBallBG()
+            fill(0, 0, 0);
+            textAlign("center");
+            text("BasketBall", canvas.width/2, menu.BBy, 50);
+            buttonn(menu.Bx, 100, 100, 50, function() {
+                    sceney = "play"
+                    menu = {
+                        BBy: -20,
+                        Bx: -200,
+                        B2x: canvas.width + 10,
+                        B3x: -200,
+                    }
+                    player = {
+                        x: 25,
+                        y: canvas.height - 70,
+                        color: "blue",
+                    }
+            }, ["Play", 30])
+            buttonn(menu.B2x, 175, 100, 50, function() {
+                    sceney = "how"
+                    menu = {
+                        BBy: -20,
+                        Bx: -200,
+                        B2x: canvas.width + 10,
+                        B3x: -200,
+                    }
+            }, ["How", 30])
+            buttonn(menu.B3x, 250, 100, 50, function() {
+                    sceney = "credits"
+                    menu = {
+                        BBy: -20,
+                        Bx: -200,
+                        B2x: canvas.width + 10,
+                        B3x: -200,
+                    }
+            }, ["Credits", 30])
+        }
+        function updateMenu() {
+            if(menu.BBy <= 49) {
+                menu.BBy = lerp(menu.BBy, 50, 0.01);
+            }
+            if(menu.BBy > 45) {
+                menu.Bx = lerp(menu.Bx, canvas.width/2 - 50, 0.01);
+            }
+            if(dist2(menu.Bx, canvas.width/2 - 50, 5)){
+                menu.B2x = lerp(menu.B2x, canvas.width/2 - 50, 0.01);
+            }
+            if(dist2(menu.B2x, canvas.width/2 - 50, 5)){
+                menu.B3x = lerp(menu.B3x, canvas.width/2 - 50, 0.01);
+            }
+        }
+        
+        function drawPlay() {
+            basketBallBG()
+            textAlign("center")
+            fill(0, 0, 0)
+            text(score, canvas.width/2, 40, 40)
+            fill(143, 76, 1)
+            rect(0, canvas.height - 50, canvas.width, 50)
+            fill(235, 124, 0)
+            ellipse(ballX, ballY, 10, 10, 0, 'brown');
+            fill(100, 100, 100);
+            rect(hoopX, hoopY, 20, 5);
+            fill(255, 255, 255);
+            rect(hoopX + 20, hoopY - 20, 5, 25);
+            
+            if(ballY < canvas.height - 60) {
+                ballGrav+=0.01;
+            } else {
+                ballGrav *= -0.3;
+                ballY = canvas.height - 60
+                ballMom*=0.98
+            }
+            if(ballGrab === true) {
+                ballX = player.x + 20;
+                ballY = player.y + 5;
+                ballGrav = 0;
+                if(clicked) {
+                    ballGrab = false;
+                    ballMom = -(player.x - mouseX)/200;
+                    ballGrav = -(player.y - mouseY)/100;
+                }
+                fill(100, 100, 100)
+                if(dragged) {
+                    var bx = ballX;
+                    var by = ballY;
+                    var bg = -(player.y - mouseY)/100;
+                    var bm = -(player.x - mouseX)/200;
+                    for(var i = 0; i < 100; i+=1) {
+                        if(by < canvas.height - 60) {
+                            bg+=0.01;
+                        } else {
+                            bg *= -0.3;
+                            by = canvas.height - 60
+                            bm*=0.98
+                        }
+                        by+=bg;
+                        bx+=bm;
+                        if(i % 10 === 0) {
+                            ellipse(bx, by, 5, 5, 0)
+                        }
+                    }
+                }
+            } else {
+                if(ballX + 3.25 > hoopX && ballX - 3.25 < hoopX + 20 && ballY + 3.25 > hoopY && ballY - 3.25 < hoopY + 5) {
+                    hoopX = Math.round(random(100, canvas.width - 50));
+                    hoopY = Math.round(random(0, canvas.height - 150));
+                    ballGrab = true;
+                    score += 1;
+                    ballMom = 0;
+                } else if(ballX + 3.25 > hoopX + 16.75 && ballX - 3.25 < hoopX + 25 && ballY + 3.25 > hoopY - 20 && ballY - 3.25 < hoopY + 5) {
+                        ballMom*=0.1;
+                        ballX = hoopX - 3.25;
+                        ballGrav*=0.95;
+                } else if(Math.abs(ballMom) + Math.abs(ballGrav) < 0.1 || ballX > canvas.width + 20 || ballX < -20) {
+                    ballGrab = true;
+                    ballMom = 0;
+                    ballGrav = 0;
+                    sceney = "gameover"
+                }
+            }
+            ballY+=ballGrav;
+            ballX+=ballMom;
+            fill(0, 0, 255);
+            rect(player.x, player.y, 15, 20);
+            fill(255, 215, 171)
+            ellipse(player.x + 7.5, player.y - 8, 7.5, 7.5, 0)
+        }
+        
+        function drawHow() {
+            basketBallBG()
+            fill(0, 0, 0)
+            buttonn(canvas.width/2 - 50, canvas.height - 100, 100, 50, function() {
+                    sceney = "menu"
+            }, ["Back", 30])
+        }
+        
+        function drawCredits() {
+            basketBallBG()
+            fill(0, 0, 0)
+            buttonn(canvas.width/2 - 50, canvas.height - 100, 100, 50, function() {
+                    sceney = "menu"
+            }, ["Back", 30])
+        }
+        function drawGameover() {
+            basketBallBG()
+            fill(0, 0, 0)
+            text("U miss Lul", canvas.width/2, gameover.Ty, 30)
+            text("At least you got " + score, canvas.width/2, gameover.Ty + 50, 20)
+            buttonn(canvas.width/2 - 50, gameover.By, 100, 50, function() {
+                    sceney = "menu"
+                    score = 0;
+                    gameover = {
+                        By: canvas.height + 50,
+                        Ty: -70,
+                    }
+            }, ["Back", 30])
+            gameover.Ty = lerp(gameover.Ty, 100, 0.01);
+            if(gameover.Ty > 99) {
+                gameover.By = lerp(gameover.By, canvas.height - 100, 0.01);
+            }
+            
+        }
+// }
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -405,6 +618,24 @@ function draw() {
             }
         break;
         case "game2":
+            switch(sceney) {
+                case "menu":
+                    drawMenu();
+                    updateMenu()
+                break;
+                case "play":
+                    drawPlay();
+                break;
+                case "how":
+                    drawHow()
+                break;
+                case "credits":
+                    drawCredits()
+                break;
+                case "gameover":
+                    drawGameover();
+                break;
+            }
         break;
     }
     // {
